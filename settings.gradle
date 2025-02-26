@@ -1,0 +1,2 @@
+rootProject.name = 'arbtether'
+include 'core', 'apigateway', 'discovery'
