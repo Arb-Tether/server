@@ -1,2 +1,3 @@
 rootProject.name = 'arbiter'
 include 'core', 'apigateway', 'discovery', 'price-collector'
+include 'aggregator'
