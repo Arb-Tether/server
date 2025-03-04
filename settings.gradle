@@ -1,2 +1,2 @@
-rootProject.name = 'arbtether'
+rootProject.name = 'arbiter'
 include 'core', 'apigateway', 'discovery', 'price-collector'

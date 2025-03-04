@@ -1,13 +1,13 @@
-package com.arbtether.core;
+package com.arbiter.discovery;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class CoreApplication {
+public class DiscoveryApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(CoreApplication.class, args);
+        SpringApplication.run(DiscoveryApplication.class, args);
     }
 
 }
