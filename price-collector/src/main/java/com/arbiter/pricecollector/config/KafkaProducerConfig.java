@@ -1,6 +1,6 @@
 package com.arbiter.pricecollector.config;
 
-import com.arbiter.pricecollector.model.dto.PriceMessageDto;
+import com.arbiter.core.model.PriceMessageDto;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Value;

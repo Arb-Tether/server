@@ -1,6 +1,6 @@
 package com.arbiter.pricecollector.service.message;
 
-import com.arbiter.pricecollector.model.dto.PriceMessageDto;
+import com.arbiter.core.model.PriceMessageDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;

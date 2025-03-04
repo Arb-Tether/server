@@ -1,6 +1,6 @@
 package com.arbiter.pricecollector.service.client;
 
-import com.arbiter.pricecollector.model.dto.PriceMessageDto;
+import com.arbiter.core.model.PriceMessageDto;
 import com.arbiter.pricecollector.service.message.KafkaProducerService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;

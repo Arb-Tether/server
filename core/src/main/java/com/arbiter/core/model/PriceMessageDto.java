@@ -1,4 +1,4 @@
-package com.arbiter.pricecollector.model.dto;
+package com.arbiter.core.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
