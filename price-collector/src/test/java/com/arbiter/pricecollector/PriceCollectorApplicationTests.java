@@ -1,4 +1,4 @@
-package com.arbtether.pricecollector;
+package com.arbiter.pricecollector;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
