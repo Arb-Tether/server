@@ -16,14 +16,13 @@ import java.util.concurrent.TimeUnit;
 public class UpbitWebSocketClient {
     private static final String UPBIT_WS_URL = "wss://api.upbit.com/websocket/v1";
 
-    private final ObjectMapper objectMapper;
     private final UpbitWebSocketListener upbitWebSocketListener;
     private WebSocket webSocket;
 
     @PostConstruct
     public void connect() {
         try {
-            log.info("업비트 WebSocket 연결 시도...");
+            log.info("[UpbitWebSocketClient] connect...");
             OkHttpClient client = new OkHttpClient.Builder()
                     .pingInterval(30, TimeUnit.SECONDS)  // 30초마다 ping
                     .retryOnConnectionFailure(true)      // 연결 실패시 재시도
