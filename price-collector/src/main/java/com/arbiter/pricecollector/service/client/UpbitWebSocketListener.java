@@ -62,6 +62,8 @@ public class UpbitWebSocketListener extends WebSocketListener {
         try {
             String text = bytes.utf8();
             PriceMessageDto priceMessageDto = objectMapper.readValue(text, PriceMessageDto.class);
+            priceMessageDto.setMarket("UPBIT");
+
             kafkaProducerService.sendPrice(priceMessageDto);
         } catch (Exception e) {
             log.error("메시지 처리 중 오류", e);
