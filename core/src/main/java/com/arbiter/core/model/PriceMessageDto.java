@@ -10,14 +10,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PriceMessageDto {
-    @JsonProperty("trade_price") // JSON의 "trade_price"를 price 필드에 매핑
+    @JsonProperty("trade_price")
     private Double price;
 
-    @JsonProperty("code") // JSON의 "code"를 ticker 필드에 매핑
+    @JsonProperty("code")
     private String ticker;
 
-    @JsonProperty("trade_timestamp") // JSON의 "trade_timestamp"를 timestamp 필드에 매핑
+    @JsonProperty("trade_timestamp")
     private Long timestamp;
+
+    private String market;
 }
 
 
