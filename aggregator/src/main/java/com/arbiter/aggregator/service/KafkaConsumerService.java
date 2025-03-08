@@ -11,6 +11,8 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static com.arbiter.core.util.MessageToPriceMessagingDtoConverter.convertToPriceMessage;
 
 @Service
@@ -22,6 +24,7 @@ public class KafkaConsumerService {
     private final KimpCalculateService kimpCalculateService;
     private final KafkaProducerService kafkaProducerService;
     private final PriceSyncService priceSyncService;
+    private final ExchangeRateService exchangeRateService;
 
     @KafkaListener(topics = "price_topic", groupId = "tst", containerFactory = "kafkaListenerContainerFactory")
     public void listen(ConsumerRecord<String, String> record) {
@@ -36,20 +39,30 @@ public class KafkaConsumerService {
         priceSyncService.sync(priceMessage);
 
         // 테더, 해외 코인 조회
-        UpbitCryptoPrice tether = cryptoPriceService.getTetherKRW();
+        double usd = exchangeRateService.getCachedForexUSDTtoKRW();
 
         double kimp;
         if (priceMessage.getMarket().equals("UPBIT")) {
-            BinanceCryptoPrice binancePrice = cryptoPriceService.getBinancePrice(priceMessage.getTicker());
+            Optional<BinanceCryptoPrice> binancePriceOpt = cryptoPriceService.getBinancePrice(priceMessage.getTicker());
+
+            if (binancePriceOpt.isEmpty()) {
+                log.warn("Binance 가격 정보를 찾을 수 없음: {}", priceMessage.getTicker());
+                return; // 티커가 없으면 로직 종료
+            }
 
             Double koreanPrice = priceMessage.getPrice();
-            Double globalPrice = binancePrice.getPrice();
-            kimp = kimpCalculateService.calculateKimpPrice(koreanPrice, globalPrice, tether.getPrice());
+            Double globalPrice = binancePriceOpt.get().getPrice();
+            kimp = kimpCalculateService.calculateKimpPrice(koreanPrice, globalPrice, usd);
         } else {
-            UpbitCryptoPrice upbitPrice = cryptoPriceService.getUpbitPrice(priceMessage.getTicker());
-            Double koreanPrice = upbitPrice.getPrice();
+            Optional<UpbitCryptoPrice> upbitPriceOpt = cryptoPriceService.getUpbitPrice(priceMessage.getTicker());
+
+            if (upbitPriceOpt.isEmpty()) {
+                log.warn("Upbit 가격 정보를 찾을 수 없음: {}", priceMessage.getTicker());
+                return; // 티커가 없으면 로직 종료
+            }
+            Double koreanPrice = upbitPriceOpt.get().getPrice();
             Double globalPrice = priceMessage.getPrice();
-            kimp = kimpCalculateService.calculateKimpPrice(koreanPrice, globalPrice, tether.getPrice());
+            kimp = kimpCalculateService.calculateKimpPrice(koreanPrice, globalPrice, usd);
         }
 
         KimpMessageDto kimpMessageDto = new KimpMessageDto();
