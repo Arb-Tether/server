@@ -1,6 +1,7 @@
 package com.arbiter.pricecollector.service.client;
 
 import com.arbiter.core.model.PriceMessageDto;
+import com.arbiter.pricecollector.model.dto.UpbitMessageDto;
 import com.arbiter.pricecollector.service.message.KafkaProducerService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -22,18 +23,25 @@ public class UpbitWebSocketListener extends WebSocketListener {
     private final ObjectMapper objectMapper;
     private final KafkaProducerService kafkaProducerService;
 
+    // ✅ 업비트 KRW 마켓 상위 10개 (BNB 제외)
+    private static final List<String> top10Markets = List.of(
+            "KRW-BTC", "KRW-ETH", "KRW-XRP", "KRW-SOL",
+            "KRW-ADA", "KRW-DOGE", "KRW-TRX", "KRW-LINK",
+            "KRW-HBAR", "KRW-XLM", "KRW-USDT"
+    );
     @Override
     public void onOpen(WebSocket webSocket, Response response) {
         log.info("업비트 WebSocket 연결 성공");
 
         try {
             // 모든 KRW 마켓 종목 조회
-            List<String> markets = upbitMarketSearchClient.getAllKRWMarkets();
+//            List<String> markets = upbitMarketSearchClient.getAllKRWMarkets();
+
 
             // 구독 메시지 생성
             String subscribeMessage = objectMapper.writeValueAsString(Arrays.asList(
                     new TicketField("ARBITER-PRICE"),
-                    new TypeField("ticker", markets)
+                    new TypeField("ticker", top10Markets)
             ));
 
             webSocket.send(subscribeMessage);
@@ -61,7 +69,12 @@ public class UpbitWebSocketListener extends WebSocketListener {
     public void onMessage(WebSocket webSocket, okio.ByteString bytes) {
         try {
             String text = bytes.utf8();
-            PriceMessageDto priceMessageDto = objectMapper.readValue(text, PriceMessageDto.class);
+            UpbitMessageDto upbitMessageDto = objectMapper.readValue(text, UpbitMessageDto.class);
+
+            PriceMessageDto priceMessageDto = new PriceMessageDto();
+            priceMessageDto.setPrice(upbitMessageDto.getPrice());
+            priceMessageDto.setTicker(upbitMessageDto.getTicker());
+            priceMessageDto.setTimestamp(upbitMessageDto.getTimestamp());
             priceMessageDto.setMarket("UPBIT");
 
             kafkaProducerService.sendPrice(priceMessageDto);
