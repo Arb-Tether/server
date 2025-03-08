@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class KimpCalculateService {
     public double calculateKimpPrice(double upbit, double binance, double usdtkrw) {
+        log.info("calculate kimp price");
+        log.info("upbit : {}, binance : {}, usdtkrw : {}", upbit, binance, usdtkrw);
         return (upbit - (binance * usdtkrw)) / (binance * usdtkrw) * 100;
     }
 }
