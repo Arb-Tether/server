@@ -28,46 +28,22 @@
 - 또는 Spring MVC
 
 ### 아키텍처 (임시)
-![](https://i.imgur.com/FTC6ebg.png)
+![](https://i.imgur.com/rVQ3cUr.png)
 
+#### 아키텍처 설계 과정
+[블로그 링크](https://velog.io/@sonjiseokk/1%EC%95%84%EB%B9%84%ED%84%B0Arbit-er-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%84%A4%EA%B3%84)
 ### EDA (Event-Driven Architecture) 흐름
 
-### **1️⃣ 실시간 가격 수집 서비스 (Real-Time Price Collector)**
+### 프로젝트 진행 과정
 
-✅ **거래소(WebSocket) → Kafka로 실시간 가격 전송**  
-✅ **모든 서비스가 Kafka를 통해 데이터 수신 가능 → 확장성 극대화**  
-✅ **여러 개의 Consumer가 동일한 데이터를 받아서 개별 처리 가능**
+#### 1️⃣ 아키텍처 설계
+[블로그 링크](https://velog.io/@sonjiseokk/1%EC%95%84%EB%B9%84%ED%84%B0Arbit-er-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%95%84%ED%82%A4%ED%85%8D%EC%B2%98-%EC%84%A4%EA%B3%84)
 
-📌 **데이터 흐름:**
-- 업비트 & 바이낸스에서 가격 수집
-- `Kafka (price-updates)`에 실시간 가격 데이터 발행
+#### 2️⃣ 프로젝트 구조
+[블로그 링크](https://velog.io/@sonjiseokk/2%EC%95%84%EB%B9%84%ED%84%B0Arbit-er-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B5%AC%EC%A1%B0)
 
----
+#### 3️⃣ 업비트 실시간 시세 연동
+[블로그 링크](https://velog.io/@sonjiseokk/2%EC%95%84%EB%B9%84%ED%84%B0Arbit-er-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EC%97%85%EB%B9%84%ED%8A%B8-%EC%8B%A4%EC%8B%9C%EA%B0%84-%EC%8B%9C%EC%84%B8-%EC%97%B0%EB%8F%99)
 
-### **2️⃣ 집계 서비스 (Aggregation Service)**
-
-✅ **Kafka에서 가격 정보 수신 → 김프 계산**  
-✅ **테더(USDT) 가격을 1분마다 업데이트 & 환율 캐싱 (Redis)**  
-✅ **프론트엔드에 WebSocket으로 실시간 데이터 전송**  
-✅ **최종 가격 & 김프 값을 Kafka로 다시 발행 (`kimp-updates`)**
-
-📌 **데이터 흐름:**
-
-- `Kafka (price-updates)`를 구독하여 가격 데이터 수신
-- USDT 환율을 Redis에서 가져와 김프 계산
-- 계산된 결과를 `Kafka (kimp-updates)`에 다시 발행
-- 동시에 프론트엔드 WebSocket을 통해 실시간 푸시
-
----
-
-### **3️⃣ 알림 서비스 (Notification Service)**
-
-✅ **각 회원별 김프 임계치 정보를 Redis에 저장**  
-✅ **Kafka에서 `kimp-updates` 메시지를 수신 → 임계치와 비교**  
-✅ **초과하면 해당 회원에게 알림 전송 (Email, Push, Telegram)**
-
-📌 **데이터 흐름:**
-
-- `Kafka (kimp-updates)`에서 새로운 김프 값 수신
-- Redis에 저장된 **회원별 임계치 값과 비교**
-- 초과하면 회원에게 **푸시 알림 / SMS / 이메일 전송**
+#### 4️⃣ 과도한 이벤트 발행 문제해결 (🔥93% 감소)
+[블로그 링크](https://velog.io/@sonjiseokk/4%EC%95%84%EB%B9%84%ED%84%B0Arbit-er-%ED%94%84%EB%A1%9C%EC%A0%9D%ED%8A%B8-%EA%B3%BC%EB%8F%84%ED%95%9C-%EC%9D%B4%EB%B2%A4%ED%8A%B8-%EB%B0%9C%ED%96%89-%EB%AC%B8%EC%A0%9C%ED%95%B4%EA%B2%B0-93-%EA%B0%90%EC%86%8C)
